@@ -45,12 +45,7 @@ const sports = [
     route: "../tutorials/sports/caboDeGuerra",
   },
 
-  {
-    title: "Queimada (Carimbada)",
-    description:
-      "Um jogo onde um time tenta acertar os jogadores do time adversário com uma bola, queimando-os para eliminá-los do jogo.",
-    shortly: true,
-  },
+  
 ];
 
 const mockChampionships = [

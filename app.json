@@ -5,20 +5,23 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo-maraneyma.png",
-    "scheme": "maraneyma",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
+    "splash": {
+      "backgroundColor": "#FFFFFF",
+      "hideStatusBar": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo-maraneyma.png",
-        "backgroundImage": "./assets/images/logo-maraneyma.png",
-        "monochromeImage": "./assets/images/logo-maraneyma.png"
+        "backgroundColor": "#FFFFFF"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "package": "com.evelynkga.Maraneyma",
+      "softwareKeyboardLayoutMode": "resize"
+    },
+    "ios": {
+      "supportsTablet": true
     },
     "web": {
       "output": "static",
@@ -29,13 +32,8 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#232323",
-          "image": "./assets/images/logo-maraneyma.png",
-          "dark": {
-            "image": "./assets/images/logo-maraneyma.png",
-            "backgroundColor": "#000000"
-          },
-          "imageWidth": 200
+          "backgroundColor": "#FFFFFF",
+          "hideStatusBar": true
         }
       ],
       "expo-font"

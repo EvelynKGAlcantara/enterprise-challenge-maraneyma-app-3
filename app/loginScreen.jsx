@@ -6,6 +6,9 @@ import {
   TouchableOpacity,
   Pressable,
   Image,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -28,77 +31,87 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
-      <HeaderBack onPress={() => router.push("/signupScreen")} />
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Acessar (login)</Text>
-      </View>
-
-      <Pressable style={styles.googleButton} onPress={handleGoogleLogin}>
-        <View style={styles.googleIcon}>
-          <Image
-            source={require("../assets/images/logo-google.png")}
-            style={styles.googleIconImage}
-          />
-        </View>
-        <Text style={styles.googleButtonText}>Continue com o Google</Text>
-      </Pressable>
-
-      <View style={styles.divider}>
-        <View style={styles.dividerLine} />
-        <Text style={styles.dividerText}>OU</Text>
-        <View style={styles.dividerLine} />
-      </View>
-
-      <View style={styles.form}>
-        <Text style={styles.headerSubtitle}>
-          Insira seu usuário e senha pra acessar
-        </Text>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>E-mail</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior="padding"
+      keyboardVerticalOffset={0}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <HeaderBack onPress={() => router.push("/signupScreen")} />
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Acessar (login)</Text>
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Senha de acesso</Text>
-
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.inputPassword}
-              placeholder="Senha"
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={setPassword}
+        <Pressable style={styles.googleButton} onPress={handleGoogleLogin}>
+          <View style={styles.googleIcon}>
+            <Image
+              source={require("../assets/images/logo-google.png")}
+              style={styles.googleIconImage}
             />
-
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              <AntDesign
-                name={showPassword ? "eye" : "eye-invisible"}
-                size={20}
-                color="#00000045"
-              />
-            </TouchableOpacity>
           </View>
-        </View>
-        <Pressable>
-          <Text style={styles.textPassword}>Esqueceu sua senha?</Text>
+          <Text style={styles.googleButtonText}>Continue com o Google</Text>
         </Pressable>
-      </View>
 
-      <View style={styles.buttons}>
-        <Pressable style={styles.primaryButton} onPress={handleLogin}>
-          <Text style={styles.primaryText}>Logar</Text>
-        </Pressable>
-      </View>
-    </View>
+        <View style={styles.divider}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>OU</Text>
+          <View style={styles.dividerLine} />
+        </View>
+
+        <View style={styles.form}>
+          <Text style={styles.headerSubtitle}>
+            Insira seu usuário e senha pra acessar
+          </Text>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>E-mail</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.inputLabel}>Senha de acesso</Text>
+
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.inputPassword}
+                placeholder="Senha"
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+              />
+
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                <AntDesign
+                  name={showPassword ? "eye" : "eye-invisible"}
+                  size={20}
+                  color="#00000045"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <Pressable>
+            <Text style={styles.textPassword}>Esqueceu sua senha?</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.buttons}>
+          <Pressable style={styles.primaryButton} onPress={handleLogin}>
+            <Text style={styles.primaryText}>Logar</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -106,8 +119,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fbfbfbff",
+  },
+  scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: 24,
     paddingBottom: 40,
+    paddingTop: 10,
   },
   header: {
     marginBottom: 32,
@@ -171,7 +188,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   form: {
-    marginBottom: 140,
+    marginBottom: 40,
   },
   formTitle: {
     fontSize: 16,
