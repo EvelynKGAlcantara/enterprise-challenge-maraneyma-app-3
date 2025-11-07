@@ -347,6 +347,14 @@ export function StudentsProvider({ children }) {
     setStudents((prev) => prev.filter((s) => s.id !== id));
   };
 
+  const updateStudent = (index, updatedStudent) => {
+    setStudents((prev) => {
+      const newStudents = [...prev];
+      newStudents[index] = { ...newStudents[index], ...updatedStudent };
+      return newStudents;
+    });
+  };
+
   const addChampionship = (data) => {
     setChampionships((prev) => [
       ...prev,
@@ -386,6 +394,7 @@ export function StudentsProvider({ children }) {
         students,
         addStudent,
         removeStudent,
+        updateStudent,
         clearStudents,
         addChampionship,
         championships,

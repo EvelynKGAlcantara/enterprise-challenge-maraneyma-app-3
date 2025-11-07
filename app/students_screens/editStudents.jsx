@@ -13,18 +13,42 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
 import { RadioButton } from "../../components/Radio/Radio";
 import { useStudents } from "../../app/context/Context";
+import * as ImagePicker from "expo-image-picker";
 
 import { DeleteModal } from "../../components/Modals/DeleteModal";
 
 export default function EditStudents() {
+  const router = useRouter();
+  const { students, idStudents, removeStudent, updateStudent } = useStudents();
+
   const handleSucess = () => {
+    if (!name || !gender || !schoolYear) {
+      Alert.alert("Atenção", "Por favor, preencha os campos obrigatórios.");
+      return;
+    }
+
+    const updatedStudent = {
+      id,
+      name,
+      gender,
+      schoolYear,
+      image: photo
+        ? { uri: photo }
+        : require("../../assets/images/profile-circle.png"),
+      classroom: classroom || "Não definida",
+      email: email || "",
+    };
+
+    updateStudent(idStudents, updatedStudent);
     router.push("./editStudentsSucesScreen");
   };
+
   const handleDelete = () => {
     setModalVisible(true);
   };
@@ -53,8 +77,6 @@ export default function EditStudents() {
     { label: "Segundo Colegial (Ensino Médio)", value: "11" },
     { label: "Terceiro Colegial (Ensino Médio)", value: "12" },
   ];
-  const router = useRouter();
-  const { students, idStudents, removeStudent } = useStudents();
   const [name, setName] = useState("");
   const [id, setId] = useState("");
   const [gender, setGender] = useState("");
@@ -75,8 +97,93 @@ export default function EditStudents() {
       setEmail(aluno.email);
       setSchoolYear(aluno.schoolYear);
       setClassroom(aluno.classroom);
+      
+      // Carregar a foto existente
+      if (aluno.image && typeof aluno.image === 'object' && aluno.image.uri) {
+        setPhoto(aluno.image.uri);
+      } else if (aluno.photoUri) {
+        setPhoto(aluno.photoUri);
+      }
     }
   }, [students]);
+
+  const requestCameraPermission = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permissão necessária",
+        "Precisamos de permissão para acessar a câmera."
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const requestMediaLibraryPermission = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permissão necessária",
+        "Precisamos de permissão para acessar a galeria."
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const handleTakePhoto = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) return;
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
+
+  const handlePickImage = async () => {
+    const hasPermission = await requestMediaLibraryPermission();
+    if (!hasPermission) return;
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
+
+  const handlePhotoOptions = () => {
+    Alert.alert(
+      "Escolha uma opção",
+      "Como você deseja adicionar a foto?",
+      [
+        {
+          text: "Tirar Foto",
+          onPress: handleTakePhoto,
+        },
+        {
+          text: "Escolher da Galeria",
+          onPress: handlePickImage,
+        },
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   return (
     <KeyboardAvoidingView
@@ -135,7 +242,7 @@ export default function EditStudents() {
               <Text style={styles.inputLabel}>
                 Foto <Text style={styles.inputDetail}>(opcional)</Text>
               </Text>
-              <PhotoInput onChangePhoto={setPhoto} />
+              <PhotoInput onPress={handlePhotoOptions} photoUri={photo} />
             </View>
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>
