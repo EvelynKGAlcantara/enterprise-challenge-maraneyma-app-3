@@ -10,6 +10,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -17,6 +18,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { RadioButton } from "../../components/Radio/Radio";
 import { useStudents } from "../context/Context";
+import * as ImagePicker from "expo-image-picker";
 
 export default function RegisterStudents() {
   const router = useRouter();
@@ -49,6 +51,84 @@ export default function RegisterStudents() {
     { label: "Terceiro Colegial (Ensino Médio)", value: "12" },
   ];
 
+  const requestCameraPermission = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permissão necessária",
+        "Precisamos de permissão para acessar a câmera."
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const requestMediaLibraryPermission = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permissão necessária",
+        "Precisamos de permissão para acessar a galeria."
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const handleTakePhoto = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (!hasPermission) return;
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
+
+  const handlePickImage = async () => {
+    const hasPermission = await requestMediaLibraryPermission();
+    if (!hasPermission) return;
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
+
+  const handlePhotoOptions = () => {
+    Alert.alert(
+      "Escolha uma opção",
+      "Como você deseja adicionar a foto?",
+      [
+        {
+          text: "Tirar Foto",
+          onPress: handleTakePhoto,
+        },
+        {
+          text: "Escolher da Galeria",
+          onPress: handlePickImage,
+        },
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const handleSave = () => {
     if (!name || !gender || !schoolYear) {
       alert("Por favor, preencha os campos obrigatórios.");
@@ -60,7 +140,9 @@ export default function RegisterStudents() {
       name,
       gender,
       schoolYear,
-      image: require("../../assets/images/profile-circle.png"),
+      image: photo
+        ? { uri: photo }
+        : require("../../assets/images/profile-circle.png"),
       classroom: classroom || "Não definida",
       email: email || "",
     };
@@ -127,7 +209,7 @@ export default function RegisterStudents() {
               <Text style={styles.inputLabel}>
                 Foto <Text style={styles.inputDetail}>(opcional)</Text>
               </Text>
-              <PhotoInput onChangePhoto={setPhoto} />
+              <PhotoInput onPress={handlePhotoOptions} photoUri={photo} />
             </View>
 
             <View style={styles.inputGroup}>

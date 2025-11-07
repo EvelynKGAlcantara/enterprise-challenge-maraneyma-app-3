@@ -1,10 +1,17 @@
 import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 
-export const PhotoInput = ({ onPress, textButton }) => {
+export const PhotoInput = ({ onPress, textButton, photoUri }) => {
   return (
     <View style={styles.container}>
       <View style={styles.avatar}>
-        <Image source={require("../../assets/images/profile-circle.png")} />
+        <Image 
+          source={
+            photoUri 
+              ? { uri: photoUri } 
+              : require("../../assets/images/profile-circle.png")
+          } 
+          style={styles.avatarImage}
+        />
       </View>
 
       <Pressable onPress={onPress} style={styles.button}>
@@ -34,10 +41,16 @@ const styles = StyleSheet.create({
   avatar: {
     width: 62,
     height: 62,
-    borderRadius: 54,
+    borderRadius: 31,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
+    overflow: "hidden",
+  },
+  avatarImage: {
+    width: 62,
+    height: 62,
+    borderRadius: 31,
   },
   button: {
     borderWidth: 1,

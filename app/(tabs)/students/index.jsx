@@ -24,6 +24,23 @@ export default function Students() {
     router.push("../../students_screens/editStudents");
   };
 
+  const getImageUrl = (student) => {
+    // Se a imagem for um objeto com URI (foto capturada)
+    if (student.image && typeof student.image === 'object' && student.image.uri) {
+      return student.image.uri;
+    }
+    // Se for um require (imagem local)
+    if (student.image && typeof student.image === 'number') {
+      return Image.resolveAssetSource(student.image).uri;
+    }
+    // Fallback para photoUri (compatibilidade com código antigo)
+    if (student.photoUri) {
+      return student.photoUri;
+    }
+    // Retorna null se não houver imagem
+    return null;
+  };
+
   const maleCount = students.filter((s) => s.gender === "Masculino").length;
   const femaleCount = students.filter((s) => s.gender === "Feminino").length;
 
@@ -69,10 +86,7 @@ export default function Students() {
                   classInfo={`${student.schoolYear}º Ano - ${
                     student.classroom || "Sem turma"
                   }`}
-                  imageURL={
-                    student.photoUri ||
-                    Image.resolveAssetSource(student.image).uri
-                  }
+                  imageURL={getImageUrl(student)}
                   onEdit={() => handleEdit(index)}
                 />
               ))}
